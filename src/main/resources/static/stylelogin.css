@@ -1,0 +1,378 @@
+/* ===== ESTILOS GENERALES ===== */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Montserrat', Arial, sans-serif;
+    background: linear-gradient(135deg, #000000 0%, #1a1a1a 25%, #2d2d2d 50%, #1a1a1a 75%, #000000 100%);
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* ===== CONTENEDOR PRINCIPAL ===== */
+.login-container {
+    display: flex;
+    height: 100vh;
+    width: 100%;
+}
+
+/* ===== SECCIÓN IZQUIERDA: PALABRAS ANIMADAS ===== */
+.words-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #2d2d2d 100%);
+    color: white;
+    position: relative;
+    padding: 40px;
+}
+
+.animated-word-container {
+    height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 40px;
+}
+
+.animated-word {
+    font-size: 4.5rem;
+    font-weight: 900;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: #ffffff;
+    margin: 0;
+    text-align: center;
+    opacity: 1;
+    transition: opacity 0.5s ease-in-out;
+}
+
+/* ===== ANIMACIÓN SUAVE DE PALABRAS ===== */
+/* Solo fade in/out elegante */
+
+.tagline {
+    position: absolute;
+    bottom: 60px;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+}
+
+.tagline p {
+    font-size: 0.9rem;
+    font-weight: 500;
+    letter-spacing: 2px;
+    color: #cccccc;
+    line-height: 1.4;
+    margin: 0;
+}
+
+/* ===== SECCIÓN DERECHA: FORMULARIO ===== */
+.form-section {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #ffffff;
+    padding: 40px;
+}
+
+/* ===== CONTENEDOR DEL FORMULARIO ===== */
+.formulario {
+    width: 100%;
+    max-width: 400px;
+    background: #ffffff;
+    border: 2px solid #333333;
+    border-radius: 0;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.formulario h1 {
+    text-align: center;
+    padding: 40px 0 30px 0;
+    margin: 0;
+    border-bottom: 2px solid #333333;
+    color: #000000;
+    font-size: 24px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.formulario form {
+    padding: 40px 40px 40px 40px;
+    box-sizing: border-box;
+}
+
+/* ===== CAMPOS DE ENTRADA ===== */
+.campo-entrada {
+    position: relative;
+    margin: 40px 0;
+}
+
+.campo-entrada input {
+    width: 100%;
+    padding: 15px 0 10px 0;
+    height: 45px;
+    font-size: 16px;
+    border: none;
+    background: none;
+    outline: none;
+    color: #000000;
+    box-sizing: border-box;
+    border-bottom: 2px solid #666666;
+    transition: all 0.3s ease;
+}
+
+.campo-entrada label {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    color: #666666;
+    transform: translateY(-50%);
+    font-size: 14px;
+    pointer-events: none;
+    transition: all 0.3s ease;
+    background: white;
+    padding: 0 5px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 500;
+}
+
+.campo-entrada span {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: #333333;
+    transition: all 0.3s ease;
+}
+
+.campo-entrada input:focus ~ label,
+.campo-entrada input:valid ~ label {
+    top: -15px;
+    left: 0;
+    color: #333333;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.campo-entrada input:focus ~ span {
+    width: 100%;
+}
+
+.campo-entrada input:focus {
+    border-bottom-color: #333333;
+}
+
+/* ===== ENLACE "OLVIDÓ SU CONTRASEÑA" ===== */
+.recordar {
+    margin: 20px 0 30px 0;
+    color: #000000;
+    cursor: pointer;
+    font-size: 12px;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 500;
+}
+
+.recordar:hover {
+    opacity: 0.6;
+}
+
+/* ===== BOTÓN DE ENVÍO ===== */
+input[type="submit"] {
+    width: 100%;
+    height: 50px;
+    border: 2px solid #333333;
+    background: linear-gradient(135deg, #000000 0%, #333333 50%, #000000 100%);
+    border-radius: 0;
+    font-size: 14px;
+    font-weight: 700;
+    color: #ffffff;
+    cursor: pointer;
+    outline: none;
+    transition: all 0.3s ease;
+    margin-top: 15px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+input[type="submit"]:hover {
+    background: linear-gradient(135deg, #333333 0%, #666666 50%, #333333 100%);
+    color: #ffffff;
+    border-color: #666666;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+/* ===== ENLACE DE REGISTRO ===== */
+.registrarse {
+    margin: 30px 0 0 0;
+    text-align: center;
+    font-size: 12px;
+    color: #666666;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.registrarse a {
+    color: #000000;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.registrarse a:hover {
+    opacity: 0.6;
+}
+
+/* ===== MENSAJES DE ÉXITO Y ERROR ===== */
+.mensaje-exito {
+    background-color: #ffffff;
+    border: 2px solid #000000;
+    color: #000000;
+    padding: 15px 15px;
+    border-radius: 0;
+    margin: 15px 40px 20px 40px;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.mensaje-error {
+    background-color: #000000;
+    border: 2px solid #000000;
+    color: #ffffff;
+    padding: 15px 15px;
+    border-radius: 0;
+    margin: 15px 40px 20px 40px;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.mensaje-exito p,
+.mensaje-error p {
+    margin: 0;
+}
+
+/* ===== ANIMACIONES ===== */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.formulario {
+    animation: fadeInUp 0.8s ease-out;
+}
+
+.brand-logo h1 {
+    animation: fadeInUp 0.8s ease-out 0.2s both;
+}
+
+.animated-word {
+    animation: fadeInUp 0.8s ease-out 0.4s both;
+}
+
+.tagline {
+    animation: fadeInUp 0.8s ease-out 0.6s both;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+    .login-container {
+        flex-direction: column;
+    }
+    
+    .words-section {
+        flex: 0.4;
+        padding: 20px;
+    }
+    
+    .form-section {
+        flex: 0.6;
+        padding: 20px;
+    }
+    
+    .brand-logo h1 {
+        font-size: 2rem;
+        margin-bottom: 30px;
+    }
+    
+    .animated-word {
+        font-size: 2.5rem;
+    }
+    
+    .animated-word-container {
+        height: 80px;
+        margin-bottom: 20px;
+    }
+    
+    .formulario {
+        border: 1px solid #333333;
+    }
+    
+    .formulario form {
+        padding: 30px 30px 30px 30px;
+    }
+    
+    .formulario h1 {
+        font-size: 20px;
+        padding: 30px 0 25px 0;
+    }
+    
+    .tagline {
+        bottom: 20px;
+    }
+    
+    .tagline p {
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .words-section {
+        padding: 15px;
+    }
+    
+    .form-section {
+        padding: 15px;
+    }
+    
+    .brand-logo h1 {
+        font-size: 1.5rem;
+        letter-spacing: 2px;
+    }
+    
+    .animated-word {
+        font-size: 2rem;
+        letter-spacing: 1px;
+    }
+    
+    .formulario form {
+        padding: 20px 25px;
+    }
+    
+    .mensaje-exito,
+    .mensaje-error {
+        margin: 15px 20px 20px 20px;
+    }
+}

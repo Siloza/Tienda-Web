@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión - FITCROWS</title>
+    <link rel="stylesheet" href="/stylelogin.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="login-container">
+        <!-- Sección izquierda: Animación de palabras -->
+        <div class="words-section">
+            <div class="animated-word-container">
+                <h2 class="animated-word" id="animatedWord">ESTILO</h2>
+            </div>
+            <div class="tagline">
+                <p>VISTE CON LA FUERZA QUE MÁS TE DEFINE</p>
+            </div>
+        </div>
+
+        <!-- Sección derecha: Formulario de login -->
+        <div class="form-section">
+            <div class="formulario">
+                <h1>Inicio de sesión</h1>
+
+                <!-- Mensajes de éxito y error -->
+                <div th:if="${success}" class="mensaje-exito">
+                    <p th:text="${success}"></p>
+                </div>
+                
+                <div th:if="${error}" class="mensaje-error">
+                    <p th:text="${error}"></p>
+                </div>
+
+                <form method="post" action="/Login">
+                    <div class="campo-entrada">
+                        <input type="text" name="username" required>
+                        <label>Nombre de usuario</label>
+                        <span></span>
+                    </div>
+                    
+                    <div class="campo-entrada">
+                        <input type="password" name="password" required>
+                        <label>Contraseña</label>
+                        <span></span>
+                    </div>
+                    
+                    <a href="#" class="recordar">¿Olvidó su contraseña?</a>
+                    
+                    <input type="submit" value="Iniciar Sesión">
+                    
+                    <div class="registrarse">
+                        ¿No tienes cuenta? <a href="#">Regístrate aquí</a>
+                    </div>        
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript para la animación de palabras -->
+    <script>
+        // Arreglo de palabras y animación suave
+        const words = ["ESTILO", "CONFORT", "CALIDAD", "FUERZA"];
+        let currentWordIndex = 0;
+        const animatedWordElement = document.getElementById('animatedWord');
+
+        function changeWord() {
+            // Desvanecimiento suave (fade out)
+            animatedWordElement.style.opacity = '0';
+            
+            setTimeout(() => {
+                // Cambiar la palabra
+                currentWordIndex = (currentWordIndex + 1) % words.length;
+                animatedWordElement.textContent = words[currentWordIndex];
+                
+                // Aparición suave (fade in)
+                animatedWordElement.style.opacity = '1';
+            }, 500); // Medio segundo para el cambio
+        }
+
+        // Cambiar palabra cada 3 segundos
+        setInterval(changeWord, 3000);
+    </script>
+</body>
+</html>
