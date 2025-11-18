@@ -21,6 +21,10 @@ public class Productos {
     private int cantidad;
     private String imagen;
     private double precio;
+    
+    // Campos para análisis de ventas
+    @Column(name = "categoria")
+    private String categoria; // Ej: "Camisetas", "Pantalones", "Zapatos"
 
     @ManyToOne
     private Usuario usuario;
@@ -29,13 +33,14 @@ public class Productos {
     public Productos() {}
 
 
-    public Productos(long id, String nombre, String descripcion, int cantidad, String imagen, double precio, Usuario usuario) {
+    public Productos(long id, String nombre, String descripcion, int cantidad, String imagen, double precio, String categoria, Usuario usuario) {
         this.id = id;
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.cantidad = cantidad;
         this.imagen = imagen;
         this.precio = precio;
+        this.categoria = categoria;
         this.usuario = usuario;
     }
 
@@ -105,6 +110,14 @@ public class Productos {
 
     public void setUsuario(Usuario usuario){
         this.usuario = usuario;
+    }
+
+    public String getCategoria() {
+        return categoria;
+    }
+
+    public void setCategoria(String categoria) {
+        this.categoria = categoria;
     }
 
     @Override

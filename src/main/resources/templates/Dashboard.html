@@ -1,213 +1,373 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard FITCROWS</title>
-    <link rel="stylesheet" href="/Tienda-Web/src/main/resources/static/dashboard.css">
-    
-    <!-- Sidebar -->
-    <aside class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-            <h2>Menú</h2>
-        </div>
-        <nav class="section-nav">
-            <ul>
-                <li><a href="#Productos" class="nav-link">PRODUCTOS</a></li>
-                <li><a href="#Clientes" class="nav-link">CLIENTES</a></li>
-                <li><a href="#Pedidos" class="nav-link">PEDIDOS</a></li>
-                <li><a href="#Ventas" class="nav-link">VENTAS</a></li>
-            </ul>
-        </nav>
-    </aside>
-
+    <title>FITCROWS - Dashboard</title>
+    <link rel="stylesheet" href="/dashboard.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
     <!-- Main Content -->
-    <div class="main-content" id="mainContent">
+    <div class="main-content">
+        <!-- Header -->
         <div class="header">
-            <h1>FITCROWS</h1>
-            <p>Bienvenido a tu panel de control</p>
+            <div class="header-content">
+                <div class="logo-section">
+                    <h1>FITCROWS</h1>
+                    <span class="subtitle">DASHBOARD ANALYTICS</span>
+                </div>
+                <nav class="nav">
+                    <a href="/">INICIO</a>
+                    <a href="/Dashboard" class="active">ESTADÍSTICAS</a>
+                    <a href="/Login">SESIÓN</a>
+                </nav>
+                <div class="sync-info">
+                    <span th:if="${hayDatos}" class="status-active">●</span>
+                    <span th:unless="${hayDatos}" class="status-inactive">●</span>
+                    <span class="status-text" th:if="${hayDatos}">SINCRONIZADO</span>
+                    <span class="status-text" th:unless="${hayDatos}">SIN DATOS</span>
+                </div>
+            </div>
         </div>
 
-    <div class="stats-grid">
-        <div class="stat-card">
-            <div class="stat-header">
-                <span class="stat-title">Ingresos Totales</span>
-                <span class="stat-icon">$</span>
+        <!-- Dashboard Content -->
+        <div class="container">
+            <!-- Stats Cards -->
+            <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-title">Ingresos Totales</span>
+                    <span class="stat-icon">💰</span>
+                </div>
+                <div class="stat-value" th:text="'$' + ${#numbers.formatDecimal(totalVentas, 0, 2)}">$45,231.89</div>
+                <div class="stat-change positive">+20.1% desde el mes pasado</div>
             </div>
-            <div class="stat-value">$0</div>
-            <div class="stat-change">+0% desde el mes pasado</div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-title">Pedidos</span>
+                    <span class="stat-icon">📦</span>
+                </div>
+                <div class="stat-value" th:text="${totalOrdenes}">1,234</div>
+                <div class="stat-change positive">+15.3% desde el mes pasado</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-title">Clientes</span>
+                    <span class="stat-icon">👥</span>
+                </div>
+                <div class="stat-value" th:text="${totalClientes}">892</div>
+                <div class="stat-change positive" th:if="${hayDatos}">+8.2% desde el mes pasado</div>
+                <div class="stat-change" th:unless="${hayDatos}">⚠️ Sin datos</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-title">Producto Más Vendido</span>
+                    <span class="stat-icon">🏆</span>
+                </div>
+                <div class="stat-value" th:text="${productoMasVendido ?: 'Sin datos'}" style="font-size: 1.5rem;">Sin datos</div>
+                <div class="stat-change positive" th:if="${hayDatos}">Top ventas del mes</div>
+                <div class="stat-change" th:unless="${hayDatos}">⚠️ Sin datos</div>
+            </div>
         </div>
 
-        <div class="stat-card">
-            <div class="stat-header">
-                <span class="stat-title">Pedidos</span>
-                <span class="stat-icon">🛒</span>
+        <!-- Charts Grid -->
+        <div class="charts-grid">
+            <!-- Tendencia de Ventas -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h2 class="chart-title">Tendencia de Ventas</h2>
+                    <p class="chart-subtitle">Ventas mensuales del último año</p>
+                </div>
+                <div class="chart-content">
+                    <canvas id="ventasChart"></canvas>
+                </div>
             </div>
-            <div class="stat-value">0</div>
-            <div class="stat-change">+0% desde el mes pasado</div>
+
+            <!-- Ventas por Categoría -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h2 class="chart-title">Ventas por Categoría</h2>
+                    <p class="chart-subtitle">Distribución de ventas por categoría de producto</p>
+                </div>
+                <div class="chart-content">
+                    <canvas id="categoriaChart"></canvas>
+                </div>
+            </div>
         </div>
 
-        <div class="stat-card">
-            <div class="stat-header">
-                <span class="stat-title">Clientes</span>
-                <span class="stat-icon">👥</span>
+        <!-- Tables Grid -->
+        <div class="tables-grid">
+            <!-- Pedidos Recientes -->
+            <div class="table-card">
+                <div class="table-header">
+                    <h2 class="chart-title">Pedidos Recientes</h2>
+                    <p class="chart-subtitle">Últimos pedidos realizados en la plataforma</p>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Cliente</th>
+                                <th>Producto</th>
+                                <th>Monto</th>
+                                <th>Estado</th>
+                                <th>Fecha</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>ORD-001</td>
+                                <td>Juan Pérez</td>
+                                <td>iPhone 14 Pro</td>
+                                <td>$999.00</td>
+                                <td><span class="status-badge status-completado">Completado</span></td>
+                                <td>15/11/2025</td>
+                            </tr>
+                            <tr>
+                                <td>ORD-002</td>
+                                <td>María García</td>
+                                <td>Samsung Galaxy S23</td>
+                                <td>$849.00</td>
+                                <td><span class="status-badge status-pendiente">Pendiente</span></td>
+                                <td>15/11/2025</td>
+                            </tr>
+                            <tr>
+                                <td>ORD-003</td>
+                                <td>Carlos López</td>
+                                <td>MacBook Air M2</td>
+                                <td>$1,299.00</td>
+                                <td><span class="status-badge status-completado">Completado</span></td>
+                                <td>14/11/2025</td>
+                            </tr>
+                            <tr>
+                                <td>ORD-004</td>
+                                <td>Ana Martínez</td>
+                                <td>iPad Pro 11"</td>
+                                <td>$799.00</td>
+                                <td><span class="status-badge status-enviado">Enviado</span></td>
+                                <td>14/11/2025</td>
+                            </tr>
+                            <tr>
+                                <td>ORD-005</td>
+                                <td>Luis Rodríguez</td>
+                                <td>AirPods Pro</td>
+                                <td>$249.00</td>
+                                <td><span class="status-badge status-completado">Completado</span></td>
+                                <td>13/11/2025</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
-            <div class="stat-value">0</div>
-            <div class="stat-change">+0% desde el mes pasado</div>
+
+            <!-- Productos Más Vendidos -->
+            <div class="table-card">
+                <div class="table-header">
+                    <h2 class="chart-title">Productos Más Vendidos</h2>
+                    <p class="chart-subtitle">Ranking de productos por número de ventas</p>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Producto</th>
+                                <th>Categoría</th>
+                                <th>Ventas</th>
+                                <th>Ingresos</th>
+                                <th>Stock</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:if="${hayDatos and reporte != null and reporte.topProductos != null and !reporte.topProductos.isEmpty()}" 
+                                th:each="producto, iterStat : ${reporte.topProductos}">
+                                <td th:text="${iterStat.count}">1</td>
+                                <td th:text="${producto.nombre}">iPhone 14 Pro</td>
+                                <td>Electrónica</td>
+                                <td th:text="${producto.cantidad}">245</td>
+                                <td th:text="'$' + ${#numbers.formatDecimal(producto.totalVentas, 0, 2)}">$244,755</td>
+                                <td>45</td>
+                            </tr>
+                            <!-- Datos de ejemplo cuando no hay datos de MongoDB -->
+                            <tr th:unless="${hayDatos}">
+                                <td>1</td>
+                                <td>iPhone 14 Pro</td>
+                                <td>Electrónica</td>
+                                <td>245</td>
+                                <td>$244,755</td>
+                                <td>45</td>
+                            </tr>
+                            <tr th:unless="${hayDatos}">
+                                <td>2</td>
+                                <td>MacBook Air M2</td>
+                                <td>Electrónica</td>
+                                <td>189</td>
+                                <td>$245,511</td>
+                                <td>23</td>
+                            </tr>
+                            <tr th:unless="${hayDatos}">
+                                <td>3</td>
+                                <td>Samsung Galaxy S23</td>
+                                <td>Electrónica</td>
+                                <td>156</td>
+                                <td>$132,444</td>
+                                <td>67</td>
+                            </tr>
+                            <tr th:unless="${hayDatos}">
+                                <td>4</td>
+                                <td>iPad Pro 11"</td>
+                                <td>Electrónica</td>
+                                <td>124</td>
+                                <td>$107,066</td>
+                                <td>39</td>
+                            </tr>
+                            <tr th:unless="${hayDatos}">
+                                <td>5</td>
+                                <td>AirPods Pro</td>
+                                <td>Accesorios</td>
+                                <td>298</td>
+                                <td>$74,202</td>
+                                <td>120</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
+        </div> <!-- End container -->
     </div>
 
-    <div class="charts-grid">
-        <div class="chart-card">
-            <h2 class="chart-title">Tendencia de Ventas</h2>
-            <p class="chart-subtitle">Ventas mensuales del último año</p>
-            <div class="line-chart">
-                <canvas id="lineChart"></canvas>
-            </div>
-        </div>
+    <script>
+        // Datos para gráficas desde Thymeleaf
+        const datosMensuales = /*[[${datosMensuales}]]*/ [];
+        const ventasPorCategoria = /*[[${ventasPorCategoria}]]*/ {};
 
-        <div class="chart-card">
-            <h2 class="chart-title">Ventas por Categoría</h2>
-            <p class="chart-subtitle">Distribución de ventas por categoría de producto</p>
-            <div class="bar-chart">
-                <div class="bar" style="height: 85%">
-                    <span class="bar-label">Camisas</span>
-                </div>
-                <div class="bar" style="height: 68%">
-                    <span class="bar-label">Pantalonetas</span>
-                </div>
-                <div class="bar" style="height: 52%">
-                    <span class="bar-label">Gorras</span>
-                </div>
-                <div class="bar" style="height: 42%">
-                    <span class="bar-label">Medias</span>
-                </div>
-                <div class="bar" style="height: 25%">
-                    <span class="bar-label">Sudaderas</span>
-                </div>
-            </div>
-        </div>
-    </div>
+        // Gráfica de Tendencia de Ventas - Estilo FITCROWS
+        const ctxVentas = document.getElementById('ventasChart').getContext('2d');
+        const ventasChart = new Chart(ctxVentas, {
+            type: 'line',
+            data: {
+                labels: ['ENE', 'FEB', 'MAR', 'ABR', 'MAY', 'JUN', 'JUL', 'AGO', 'SEP', 'OCT', 'NOV', 'DIC'],
+                datasets: [{
+                    data: [3500, 2500, 5000, 4500, 7000, 6500, 7500, 6800, 8500, 7200, 9000, 8800],
+                    borderColor: '#000000',
+                    backgroundColor: 'rgba(0, 0, 0, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.1,
+                    pointBackgroundColor: '#000000',
+                    pointBorderColor: '#ffffff',
+                    pointBorderWidth: 2,
+                    pointRadius: 5
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { 
+                            color: '#e0e0e0',
+                            borderColor: '#000000'
+                        },
+                        ticks: { 
+                            color: '#000000',
+                            font: { family: 'Montserrat', weight: '600', size: 10 }
+                        }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { 
+                            color: '#000000',
+                            font: { family: 'Montserrat', weight: '600', size: 10 }
+                        }
+                    }
+                }
+            }
+        });
 
-    <div class="tables-grid">
-        <div class="table-card">
-            <h2 class="chart-title">Pedidos Recientes</h2>
-            <p class="chart-subtitle">Últimos pedidos realizados en la plataforma</p>
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Cliente</th>
-                        <th>Producto</th>
-                        <th>Monto</th>
-                        <th>Estado</th>
-                        <th>Fecha</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>ORD-001</td>
-                        <td>Juan Pérez</td>
-                        <td>iPhone 14 Pro</td>
-                        <td>$999.00</td>
-                        <td><span class="status-badge status-completado">Completado</span></td>
-                        <td>15/11/2025</td>
-                    </tr>
-                    <tr>
-                        <td>ORD-002</td>
-                        <td>María García</td>
-                        <td>Samsung Galaxy S23</td>
-                        <td>$849.00</td>
-                        <td><span class="status-badge status-pendiente">Pendiente</span></td>
-                        <td>15/11/2025</td>
-                    </tr>
-                    <tr>
-                        <td>ORD-003</td>
-                        <td>Carlos López</td>
-                        <td>MacBook Air M2</td>
-                        <td>$1,299.00</td>
-                        <td><span class="status-badge status-completado">Completado</span></td>
-                        <td>14/11/2025</td>
-                    </tr>
-                    <tr>
-                        <td>ORD-004</td>
-                        <td>Ana Martínez</td>
-                        <td>iPad Pro 11"</td>
-                        <td>$799.00</td>
-                        <td><span class="status-badge status-enviado">Enviado</span></td>
-                        <td>14/11/2025</td>
-                    </tr>
-                    <tr>
-                        <td>ORD-005</td>
-                        <td>Luis Rodríguez</td>
-                        <td>AirPods Pro</td>
-                        <td>$249.00</td>
-                        <td><span class="status-badge status-completado">Completado</span></td>
-                        <td>13/11/2025</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+        // Gráfica de Ventas por Categoría
+        const ctxCategoria = document.getElementById('categoriaChart').getContext('2d');
+        
+        // Datos desde Thymeleaf (MongoDB)
+        const categoriasLabels = Object.keys(ventasPorCategoria).length > 0 
+            ? Object.keys(ventasPorCategoria) 
+            : ['Sudaderas', 'Tenis', 'Camisetas', 'Pantalonestas', 'Camisillas', 'Busos'];
+            
+        const categoriasData = Object.keys(ventasPorCategoria).length > 0 
+            ? Object.values(ventasPorCategoria)
+            : [164000, 270000, 90000, 0, 28000, 95000];
+            
+        console.log('Ventas por categoría desde MongoDB:', ventasPorCategoria);
+        console.log('Labels:', categoriasLabels);
+        console.log('Data:', categoriasData);
 
-        <div class="table-card">
-            <h2 class="chart-title">Productos Más Vendidos</h2>
-            <p class="chart-subtitle">Ranking de productos por número de ventas</p>
-            <table>
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Producto</th>
-                        <th>Categoría</th>
-                        <th>Ventas</th>
-                        <th>Ingresos</th>
-                        <th>Stock</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td>iPhone 14 Pro</td>
-                        <td>Electrónica</td>
-                        <td>245</td>
-                        <td>$244,755</td>
-                        <td>45</td>
-                    </tr>
-                    <tr>
-                        <td>2</td>
-                        <td>MacBook Air M2</td>
-                        <td>Electrónica</td>
-                        <td>189</td>
-                        <td>$245,511</td>
-                        <td class="stock-low">23</td>
-                    </tr>
-                    <tr>
-                        <td>3</td>
-                        <td>Samsung Galaxy S23</td>
-                        <td>Electrónica</td>
-                        <td>156</td>
-                        <td>$132,444</td>
-                        <td>67</td>
-                    </tr>
-                    <tr>
-                        <td>4</td>
-                        <td>iPad Pro 11"</td>
-                        <td>Electrónica</td>
-                        <td>134</td>
-                        <td>$107,066</td>
-                        <td>38</td>
-                    </tr>
-                    <tr>
-                        <td>5</td>
-                        <td>AirPods Pro</td>
-                        <td>Accesorios</td>
-                        <td>298</td>
-                        <td>$74,202</td>
-                        <td>120</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-    </div>
-    </body>
+        const categoriaChart = new Chart(ctxCategoria, {
+            type: 'bar',
+            data: {
+                labels: categoriasLabels.map(label => label.toUpperCase()),
+                datasets: [{
+                    data: categoriasData,
+                    backgroundColor: [
+                        '#000000',
+                        '#333333',
+                        '#555555', 
+                        '#777777',
+                        '#999999',
+                        '#bbbbbb'
+                    ],
+                    borderColor: '#000000',
+                    borderWidth: 1,
+                    borderRadius: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { 
+                            color: '#e0e0e0',
+                            borderColor: '#000000'
+                        },
+                        ticks: { 
+                            color: '#000000',
+                            font: { family: 'Montserrat', weight: '600', size: 10 },
+                            callback: function(value) {
+                                if (value >= 1000000) {
+                                    return '$' + (value / 1000000).toFixed(1) + 'M';
+                                } else if (value >= 1000) {
+                                    return '$' + (value / 1000).toFixed(0) + 'K';
+                                } else {
+                                    return '$' + value.toFixed(0);
+                                }
+                            }
+                        }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { 
+                            color: '#000000',
+                            font: { family: 'Montserrat', weight: '600', size: 10 }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
 </html>
