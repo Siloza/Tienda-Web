@@ -42,7 +42,7 @@ public class DashboardController {
     /**
      * 📊 DASHBOARD PRINCIPAL 
      */
-    @GetMapping("/Dashboard")
+    @GetMapping("/dashboard")
     public String mostrarDashboard(Model model) {
         try {
             // Sincronización automática antes del dashboard

@@ -51,10 +51,42 @@
                     <input type="submit" value="Iniciar Sesión">
                     
                     <div class="registrarse">
-                        ¿No tienes cuenta? <a href="#">Regístrate aquí</a>
+                        ¿No tienes cuenta? <a href="#" onclick="openRegister(event)">Regístrate aquí</a>
                     </div>        
                 </form>
             </div>
+        </div>
+    </div>
+
+    <!-- Modal Registro -->
+    <div id="registerModal" class="modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); align-items:center; justify-content:center;">
+        <div style="background:#fff; padding:24px; border-radius:12px; width:340px; position:relative; box-shadow:0 10px 40px rgba(0,0,0,0.2);">
+            <button style="position:absolute; top:8px; right:10px; border:none; background:transparent; font-size:20px; cursor:pointer;" onclick="closeRegister()">×</button>
+            <h2 style="margin-bottom:12px;">Crear cuenta</h2>
+            <form id="registerForm" onsubmit="submitRegister(event)">
+                <div class="campo-entrada">
+                    <input type="text" name="nombre" required>
+                    <label>Nombre</label><span></span>
+                </div>
+                <div class="campo-entrada">
+                    <input type="text" name="segundoNombre" placeholder="Segundo nombre (opcional)">
+                    <label style="opacity:0.6;">Segundo nombre</label><span></span>
+                </div>
+                <div class="campo-entrada">
+                    <input type="email" name="email" required>
+                    <label>Email</label><span></span>
+                </div>
+                <div class="campo-entrada">
+                    <input type="text" name="usuario" required>
+                    <label>Usuario</label><span></span>
+                </div>
+                <div class="campo-entrada">
+                    <input type="password" name="password" required>
+                    <label>Contraseña</label><span></span>
+                </div>
+                <button type="submit" style="width:100%; padding:10px; margin-top:10px; background:#111; color:#fff; border:none; border-radius:8px; cursor:pointer;">Registrar</button>
+            </form>
+            <div id="registerMsg" style="margin-top:10px; font-weight:600;"></div>
         </div>
     </div>
 
@@ -81,6 +113,33 @@
 
         // Cambiar palabra cada 3 segundos
         setInterval(changeWord, 3000);
+
+        function openRegister(e){ e.preventDefault(); document.getElementById('registerModal').style.display='flex'; }
+        function closeRegister(){ document.getElementById('registerModal').style.display='none'; document.getElementById('registerMsg').textContent=''; }
+
+        async function submitRegister(e){
+            e.preventDefault();
+            const form = document.getElementById('registerForm');
+            const data = Object.fromEntries(new FormData(form).entries());
+            try{
+                const resp = await fetch('/register', {
+                    method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data)
+                });
+                const text = await resp.text();
+                const msgEl = document.getElementById('registerMsg');
+                if(resp.ok){
+                    msgEl.style.color = 'green';
+                    msgEl.textContent = text || 'Registro exitoso';
+                    form.reset();
+                } else {
+                    msgEl.style.color = 'red';
+                    msgEl.textContent = text || 'No se pudo registrar';
+                }
+            } catch(err){
+                document.getElementById('registerMsg').style.color='red';
+                document.getElementById('registerMsg').textContent='Error al registrar';
+            }
+        }
     </script>
 </body>
 </html>

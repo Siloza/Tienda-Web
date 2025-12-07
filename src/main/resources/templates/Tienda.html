@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tienda - FitCrows</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+        }
+
+        header {
+            background: linear-gradient(135deg, #000 0%, #333 100%);
+            color: white;
+            padding: 20px 0;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .container-main {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px 20px;
+            display: flex;
+            gap: 30px;
+        }
+
+        /* MENÚ VERTICAL */
+        .sidebar {
+            width: 220px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+        }
+
+        .sidebar h3 {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: #000;
+            border-bottom: 2px solid #000;
+            padding-bottom: 10px;
+        }
+
+        .category-list {
+            list-style: none;
+        }
+
+        .category-item {
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            background-color: #f0f0f0;
+            border-left: 3px solid transparent;
+            font-weight: 500;
+        }
+
+        .category-item:hover {
+            background-color: #e0e0e0;
+            border-left-color: #000;
+        }
+
+        .category-item.active {
+            background-color: #000;
+            color: white;
+            border-left-color: white;
+        }
+
+        /* CONTENIDO PRINCIPAL */
+        .main-content {
+            flex: 1;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 25px;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 250px;
+            background: linear-gradient(135deg, #e0e0e0 0%, #f0f0f0 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .product-info {
+            padding: 15px;
+        }
+
+        .product-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #000;
+            margin-bottom: 8px;
+        }
+
+        .product-price {
+            font-size: 20px;
+            font-weight: bold;
+            color: #000;
+        }
+
+        /* MODAL */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 0;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 85vh;
+            overflow-y: auto;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #000 0%, #333 100%);
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 28px;
+            cursor: pointer;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-body {
+            padding: 30px;
+        }
+
+        .modal-product-image {
+            width: 100%;
+            height: 400px;
+            background: linear-gradient(135deg, #e0e0e0 0%, #f0f0f0 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .modal-product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .product-details {
+            margin-bottom: 20px;
+        }
+
+        .product-details h3 {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: #000;
+        }
+
+        .product-price-modal {
+            font-size: 28px;
+            font-weight: bold;
+            color: #000;
+            margin-bottom: 15px;
+        }
+
+        .product-description {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .comments-section {
+            margin-top: 30px;
+            border-top: 2px solid #eee;
+            padding-top: 20px;
+        }
+
+        .comments-section h4 {
+            margin-bottom: 15px;
+            color: #000;
+        }
+
+        .comment-item {
+            background: #f9f9f9;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            border-left: 3px solid #000;
+        }
+
+        .comment-author {
+            font-weight: 600;
+            color: #000;
+            font-size: 13px;
+        }
+
+        .comment-text {
+            color: #666;
+            font-size: 13px;
+            margin-top: 5px;
+        }
+
+        .comment-form {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .comment-form input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+
+        .comment-form button {
+            padding: 10px 20px;
+            background: #000;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+
+        .comment-form button:hover {
+            background: #333;
+        }
+
+        .no-products {
+            grid-column: 1 / -1;
+            padding: 40px;
+            text-align: center;
+            color: #999;
+            font-size: 18px;
+        }
+
+        .rating {
+            display: flex;
+            gap: 3px;
+            margin-bottom: 15px;
+        }
+
+        .star {
+            color: #ffc107;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <!-- ENCABEZADO -->
+    <header>
+        <div class="header-content">
+            <div class="logo">🏋️ FitCrows Store</div>
+            <div>
+                <a href="/" style="color: white; text-decoration: none; margin-right: 20px;">Inicio</a>
+                <a href="/dashboard" style="color: white; text-decoration: none;">Dashboard</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <div class="container-main">
+        <!-- MENÚ LATERAL DE FILTRO -->
+        <aside class="sidebar">
+            <h3>Filtrar por categoría</h3>
+            <ul class="category-list">
+                <li class="category-item active" data-category="all">Todos los productos</li>
+                <li class="category-item" data-category="Tenis">Tenis</li>
+                <li class="category-item" data-category="Camisetas">Camisetas</li>
+                <li class="category-item" data-category="Busos">Busos</li>
+                <li class="category-item" data-category="Sudaderas">Sudaderas</li>
+                <li class="category-item" data-category="Pantalonetas">Pantalonetas</li>
+                <li class="category-item" data-category="Camisillas">Camisillas</li>
+            </ul>
+        </aside>
+
+        <!-- GRID DE PRODUCTOS -->
+        <main class="main-content">
+            <div class="products-grid" id="productsGrid">
+                <!-- Los productos se insertarán aquí con JavaScript -->
+            </div>
+        </main>
+    </div>
+
+    <!-- MODAL DE DETALLES -->
+    <div id="productModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalProductName">Nombre del Producto</h2>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-product-image" id="modalProductImage">
+                    <img src="" alt="Producto">
+                </div>
+                <div class="product-details">
+                    <div class="product-price-modal" id="modalProductPrice">$0</div>
+                    <div class="rating">
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star" style="color: #ddd;">★</span>
+                    </div>
+                    <div style="display:flex; gap:12px; align-items:center; margin-top:10px;">
+                        <label for="qtyInput" style="font-weight:600;">Cantidad</label>
+                        <input id="qtyInput" type="number" min="1" value="1" style="width:70px; padding:6px 8px; border:1px solid #ddd; border-radius:8px;">
+                        <button style="padding:10px 16px; background:#111; color:#fff; border:none; border-radius:8px; cursor:pointer;" onclick="pagarProducto()">Pagar</button>
+                    </div>
+                </div>
+                <p class="product-description" id="modalProductDescription">
+                    Descripción del producto
+                </p>
+
+                <div class="comments-section">
+                    <h4>Comentarios y Reseñas</h4>
+                    <div id="commentsList">
+                        <p style="color: #999;">No hay comentarios aún. ¡Sé el primero!</p>
+                    </div>
+                    <div class="comment-form">
+                        <input type="text" id="commentInput" placeholder="Escribe tu comentario...">
+                        <button onclick="addComment()">Enviar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DATOS DE PRODUCTOS QUEMADOS
+        const productos = [
+            // TENIS
+            {
+                id: 1,
+                nombre: "Tenis Running Pro",
+                categoria: "Tenis",
+                precio: 85000,
+                imagen: "https://images.puma.com/image/upload/f_auto,q_auto,b_rgb:fafafa,w_600,h_600/global/377758/01/mod01/fnd/PNA/fmt/png/Tenis-para-correr-para-mujer-ForeverRun-NITRO",
+                descripcion: "Tenis deportivos de alta calidad con tecnología de amortiguación avanzada. Perfectos para correr y entrenar. Material transpirable y suela durable.",
+                rating: 4.5,
+                comentarios: [
+                    {autor: "Juan Pérez", texto: "Excelentes tenis, muy cómodos"},
+                    {autor: "María García", texto: "Muy buena calidad, recomendado"}
+                ]
+            },
+            {
+                id: 2,
+                nombre: "Tenis Casual Blanco",
+                categoria: "Tenis",
+                precio: 75000,
+                imagen: "https://www.basilos.com.co/cdn/shop/files/ImagendeWhatsApp2025-01-07alas10.36.15_b5f9f43c_30bb82bc-7c36-49c7-8687-f278982db768.jpg?v=1737042495",
+                descripcion: "Tenis casual versátil que combina con cualquier outfit. Ideal para el día a día. Diseño moderno y elegante con comfort garantizado.",
+                rating: 4,
+                comentarios: []
+            },
+            {
+                id: 3,
+                nombre: "Tenis Deportivos Negros",
+                categoria: "Tenis",
+                precio: 95000,
+                imagen: "https://assets.adidas.com/images/w_600,f_auto,q_auto/6cc669ce74654b478925ae2b00601081_9366/Tenis_adidas_Grand_Court_Lifestyle_para_Tenis_con_Cordones_Negro_GW6503_01_standard.jpg",
+                descripcion: "Tenis deportivos profesionales con soporte lateral mejorado. Excelente para actividades de alto rendimiento. Durabilidad excepcional.",
+                rating: 5,
+                comentarios: []
+            },
+
+            // CAMISETAS
+            {
+                id: 4,
+                nombre: "Camiseta FitCrows Premium",
+                categoria: "Camisetas",
+                precio: 35000,
+                imagen: "https://www.rezdez.com.co/cdn/shop/files/IMG-1769.webp?v=1737250146",
+                descripcion: "Camiseta deportiva premium con tela transpirable y ajuste perfecto. Logo FitCrows bordado. Ideal para entrenar o usar en el día a día.",
+                rating: 4.5,
+                comentarios: []
+            },
+            {
+                id: 5,
+                nombre: "Camiseta Oversize Blanca",
+                categoria: "Camisetas",
+                precio: 32000,
+                imagen: "https://cdn.shopify.com/s/files/1/0156/6146/files/EssentialOversizedT-ShirtWhiteA1A3E-WBBM-1814_A-Edit_81a0d9be-de0c-4bc7-a18b-f07371a7d90a.jpg?v=1754992734",
+                descripcion: "Camiseta oversize de estilo urbano. Tela suave y cómoda. Perfecta para un look casual y moderno. Disponible en varios colores.",
+                rating: 4,
+                comentarios: []
+            },
+            {
+                id: 6,
+                nombre: "Camiseta Técnica Gris",
+                categoria: "Camisetas",
+                precio: 40000,
+                imagen: "https://cdn.shopify.com/s/files/1/0156/6146/products/EssentialSSSlimTee-CharcoalGreyMarlA3A5I-GBFH6.jpg?v=1660721982",
+                descripcion: "Camiseta técnica con propiedades anti-humedad. Ideal para entrenamientos intensos. Tecnología SecaDry para mantener la piel seca.",
+                rating: 4.5,
+                comentarios: []
+            },
+
+            // BUSOS
+            {
+                id: 7,
+                nombre: "Buso Deportivo Negro",
+                categoria: "Busos",
+                precio: 85000,
+                imagen: "https://i.ebayimg.com/thumbs/images/g/xVoAAeSwrs5pM5wX/s-l1200.webp",
+                descripcion: "Buso deportivo cómodo con cierre frontal. Bolsillos funcionales para mantener tus objetos seguros. Ideal para entrenamientos y actividades cotidianas.",
+                rating: 4.5,
+                comentarios: []
+            },
+            {
+                id: 8,
+                nombre: "Buso FitCrows Classic",
+                categoria: "Busos",
+                precio: 78000,
+                imagen: "https://cdn.shopify.com/s/files/1/0156/6146/files/RetroTrackJacket-GSCamoBrown-GSLinenBrown-GSWashedStoneBrownA4A9V-NB8R-1667.jpg?v=1696606391",
+                descripcion: "Buso clásico con capucha y logo FitCrows. Material de calidad que proporciona calidez y comodidad. Perfecto para cualquier temporada.",
+                rating: 4,
+                comentarios: []
+            },
+            {
+                id: 9,
+                nombre: "Buso Técnico Gris",
+                categoria: "Busos",
+                precio: 90000,
+                imagen: "https://cdn.shopify.com/s/files/1/0156/6146/files/HeritageWashedHoodieGSOnyxGrey-ACIDWASHSMALLBALLA4A7J-GB8N-1430.jpg?v=1695912174",
+                descripcion: "Buso técnico avanzado con regulación de temperatura. Tela elástica que se adapta perfectamente al cuerpo. Ideal para entrenamientos intensos.",
+                rating: 5,
+                comentarios: []
+            },
+
+            // SUDADERAS
+            {
+                id: 10,
+                nombre: "Sudadera Oversize Negra",
+                categoria: "Sudaderas",
+                precio: 95000,
+                imagen: "https://www.dualproject.com.co/cdn/shop/products/24.jpg?v=1675033706&width=1445",
+                descripcion: "Sudadera oversize moderna con tela premium. Corte relajado que es tendencia en el street style. Material suave y duradero.",
+                rating: 4.5,
+                comentarios: []
+            },
+            {
+                id: 11,
+                nombre: "Sudadera FitCrows Pro",
+                categoria: "Sudaderas",
+                precio: 110000,
+                imagen: "https://belife.co/cdn/shop/files/106440-00-1.jpg?v=1749231696&width=600",
+                descripcion: "Sudadera profesional con ajuste perfecto. Tecnología de clima regulado. Ideal para entrenamientos de alto rendimiento.",
+                rating: 5,
+                comentarios: []
+            },
+            {
+                id: 12,
+                nombre: "Sudadera Casual Gris",
+                categoria: "Sudaderas",
+                precio: 88000,
+                imagen: "https://static.dafiti.com.co/p/jack-jones-6328-7179491-1-zoom.jpg",
+                descripcion: "Sudadera casual versátil con bolsillos laterales. Excelente relación calidad-precio. Combina fácilmente con cualquier atuendo.",
+                rating: 4,
+                comentarios: []
+            },
+
+            // PANTALONETAS
+            {
+                id: 13,
+                nombre: "Pantaloneta Running",
+                categoria: "Pantalonetas",
+                precio: 55000,
+                imagen: "https://cdn.shopify.com/s/files/1/1367/5207/products/Sport5ShortBlack-A2A8K-BBBB-2306.245.jpg?v=1677057796",
+                descripcion: "Pantaloneta diseñada específicamente para correr. Material respirable con bolsillos internos. Cintura ajustable para mayor comodidad.",
+                rating: 4.5,
+                comentarios: []
+            },
+            {
+                id: 14,
+                nombre: "Pantaloneta FitCrows",
+                categoria: "Pantalonetas",
+                precio: 50000,
+                imagen: "https://cdn.shopify.com/s/files/1/0156/6146/files/images-A6A8E_BB2J_2.jpg?v=1752062581",
+                descripcion: "Pantaloneta versátil con logo FitCrows. Ideal para entrenamientos diversos. Tela cómoda y elástica que facilita el movimiento.",
+                rating: 4,
+                comentarios: []
+            },
+            {
+                id: 15,
+                nombre: "Pantaloneta Técnica Negro",
+                categoria: "Pantalonetas",
+                precio: 65000,
+                imagen: "https://cdn.shopify.com/s/files/1/0156/6146/files/images-Arrival5ShortsBlackA2A1M_BBBB_1826_A_Edit_3840x.jpg?v=1750084637",
+                descripcion: "Pantaloneta técnica con propiedades anti-humedad. Perfecta para deportes de alto impacto. Comodidad máxima garantizada.",
+                rating: 5,
+                comentarios: []
+            },
+
+            // CAMISILLAS
+            {
+                id: 16,
+                nombre: "Camisilla Deportiva",
+                categoria: "Camisillas",
+                precio: 25000,
+                imagen: "https://cdn.shopify.com/s/files/1/0156/6146/files/GFXLifting7RDETankGSBlackA2B9H-BB2J1698-0127_3840x.jpg?v=1741794089",
+                descripcion: "Camisilla deportiva básica y versátil. Tela suave y transpirable. Perfecta para entrenamientos en climas cálidos.",
+                rating: 4,
+                comentarios: []
+            },
+            {
+                id: 17,
+                nombre: "Camisilla FitCrows",
+                categoria: "Camisillas",
+                precio: 22000,
+                imagen: "https://cdn.shopify.com/s/files/1/1693/6097/products/CriticalReactSlimDropArmTankNavyA2A8O-UBCY1.jpg?v=1662719155",
+                descripcion: "Camisilla con logo FitCrows. Material de calidad premium. Excelente relación calidad-precio.",
+                rating: 4.5,
+                comentarios: []
+            },
+            {
+                id: 18,
+                nombre: "Camisilla Técnica Pro",
+                categoria: "Camisillas",
+                precio: 30000,
+                imagen: "https://cdn.shopify.com/s/files/1/0098/8822/files/CriticalTankBlackA2A1E-BBBB-1837_A-Edit_35bbae31-aaaa-4107-9b1f-4ab428bb1666.jpg?v=1744725852",
+                descripcion: "Camisilla técnica con tecnología de secado rápido. Ideal para entrenamientos intensos. Máxima transpirabilidad.",
+                rating: 5,
+                comentarios: []
+            }
+        ];
+
+        let currentCategory = 'all';
+        let currentProduct = null;
+        const comentariosLocales = {};
+
+        // Inicializar comentarios locales
+        productos.forEach(p => {
+            comentariosLocales[p.id] = [...p.comentarios];
+        });
+
+        // Renderizar productos inicialmente
+        function renderProducts(category) {
+            const grid = document.getElementById('productsGrid');
+            grid.innerHTML = '';
+
+            let filtered = productos;
+            if (category !== 'all') {
+                filtered = productos.filter(p => p.categoria === category);
+            }
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '<div class="no-products">No hay productos en esta categoría</div>';
+                return;
+            }
+
+            filtered.forEach(producto => {
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                card.innerHTML = `
+                    <div class="product-image">
+                        <img src="${producto.imagen}" alt="${producto.nombre}" onerror="this.src='https://via.placeholder.com/250x250?text=Sin+imagen'">
+                    </div>
+                    <div class="product-info">
+                        <div class="product-name">${producto.nombre}</div>
+                        <div class="product-price">$${producto.precio.toLocaleString('es-CO')}</div>
+                    </div>
+                `;
+                card.onclick = () => openModal(producto);
+                grid.appendChild(card);
+            });
+        }
+
+        // Abrir modal
+        function openModal(producto) {
+            const modal = document.getElementById('productModal');
+            document.getElementById('modalProductName').textContent = producto.nombre;
+            document.getElementById('modalProductPrice').textContent = `$${producto.precio.toLocaleString('es-CO')}`;
+            document.getElementById('modalProductDescription').textContent = producto.descripcion;
+            document.querySelector('.modal-product-image img').src = producto.imagen;
+            document.getElementById('qtyInput').value = 1;
+
+            currentProduct = producto;
+
+            // Renderizar comentarios
+            renderComments(producto.id);
+
+            modal.style.display = 'block';
+            document.body.style.overflow = 'hidden';
+            window.currentProductId = producto.id;
+        }
+
+        // Cerrar modal
+        function closeModal() {
+            const modal = document.getElementById('productModal');
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        // Renderizar comentarios
+        function renderComments(productId) {
+            const commentsList = document.getElementById('commentsList');
+            const comments = comentariosLocales[productId] || [];
+
+            if (comments.length === 0) {
+                commentsList.innerHTML = '<p style="color: #999;">No hay comentarios aún. ¡Sé el primero!</p>';
+                return;
+            }
+
+            commentsList.innerHTML = comments.map(comment => `
+                <div class="comment-item">
+                    <div class="comment-author">${comment.autor}</div>
+                    <div class="comment-text">${comment.texto}</div>
+                </div>
+            `).join('');
+        }
+
+        // Agregar comentario
+        function addComment() {
+            const input = document.getElementById('commentInput');
+            const text = input.value.trim();
+
+            if (text === '') {
+                alert('Por favor escribe un comentario');
+                return;
+            }
+
+            const productId = window.currentProductId;
+            if (!comentariosLocales[productId]) {
+                comentariosLocales[productId] = [];
+            }
+
+            comentariosLocales[productId].push({
+                autor: 'Usuario Anónimo',
+                texto: text
+            });
+
+            input.value = '';
+            renderComments(productId);
+        }
+
+        // Event listeners para categorías
+        document.querySelectorAll('.category-item').forEach(item => {
+            item.addEventListener('click', function() {
+                // Remover clase active
+                document.querySelectorAll('.category-item').forEach(i => i.classList.remove('active'));
+                // Añadir clase active al clickeado
+                this.classList.add('active');
+                // Renderizar productos
+                currentCategory = this.getAttribute('data-category');
+                renderProducts(currentCategory);
+            });
+        });
+
+        // Cerrar modal si se hace click afuera
+        window.onclick = function(event) {
+            const modal = document.getElementById('productModal');
+            if (event.target == modal) {
+                closeModal();
+            }
+        };
+
+        // Renderizar inicialmente
+        renderProducts('all');
+
+        async function pagarProducto() {
+            if (!currentProduct) return;
+            const qty = parseInt(document.getElementById('qtyInput').value) || 1;
+            const payload = {
+                nombre: currentProduct.nombre,
+                precio: currentProduct.precio,
+                categoria: currentProduct.categoria,
+                cantidad: qty,
+                imagen: currentProduct.imagen
+            };
+            try {
+                const resp = await fetch('/api/checkout', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+                if (!resp.ok) throw new Error('Error al procesar el pago');
+                alert('Pago exitoso');
+                closeModal();
+            } catch (err) {
+                console.error(err);
+                alert('No se pudo completar el pago');
+            }
+        }
+    </script>
+</body>
+</html>
