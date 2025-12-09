@@ -773,12 +773,25 @@
                     },
                     body: JSON.stringify(payload)
                 });
-                if (!resp.ok) throw new Error('Error al procesar el pago');
-                alert('Pago exitoso');
+                
+                // ✅ Si retorna 401, significa que no hay sesión
+                if (resp.status === 401) {
+                    alert('Por favor, inicia sesión para comprar');
+                    window.location.href = '/Login';
+                    return;
+                }
+                
+                if (!resp.ok) {
+                    const errorMsg = await resp.text();
+                    throw new Error(errorMsg || 'Error al procesar el pago');
+                }
+                
+                const successMsg = await resp.text();
+                alert(successMsg || 'Pago exitoso');
                 closeModal();
             } catch (err) {
                 console.error(err);
-                alert('No se pudo completar el pago');
+                alert(err.message || 'No se pudo completar el pago');
             }
         }
     </script>

@@ -23,7 +23,15 @@
                 </ul>
             </nav>
             <div class="auth-section">
-                <a href="/Login" class="login-btn">INICIAR SESIÓN</a>
+                <!-- Si NO hay sesión, mostrar botón de login -->
+                <div th:if="${session.usuarioAutenticado == null}">
+                    <a href="/Login" class="login-btn">INICIAR SESIÓN</a>
+                </div>
+                <!-- Si hay sesión, mostrar usuario y botón de logout -->
+                <div th:unless="${session.usuarioAutenticado == null}">
+                    <span class="username-display" th:text="${session.usuarioAutenticado}"></span>
+                    <a href="/Logout" class="login-btn" style="margin-left: 10px;">CERRAR SESIÓN</a>
+                </div>
                 <div class="social-icons">
                     <a href="#" class="social-icon">◉</a>
                     <a href="#" class="social-icon">▢</a>

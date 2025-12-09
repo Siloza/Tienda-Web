@@ -4,7 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.JoinColumn;
 
 @Entity
@@ -18,11 +18,12 @@ public class DetalleOrden {
     private double precio;
     private double total;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "orden_id")
     private Orden orden;
 
-    @OneToOne
+    @ManyToOne
+    @JoinColumn(name = "producto_id")
     private Productos producto;
 
     public DetalleOrden(){}

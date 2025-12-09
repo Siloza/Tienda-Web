@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.spring.tiendaweb.tiendawebapp.Entity.Usuario;
 import com.spring.tiendaweb.tiendawebapp.Service.UsuarioService;
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class LoginController {
@@ -32,7 +33,8 @@ public class LoginController {
     public String procesarLogin(
             @RequestParam("username") String username,
             @RequestParam("password") String password,
-            Model model) {
+            Model model,
+            HttpSession session) {
         
         // Validar que no estén vacíos
         if (username == null || username.trim().isEmpty() || 
@@ -41,14 +43,40 @@ public class LoginController {
             return "Login";
         }
 
-        //validación con CACHE
+        //validación con CACHE (Redis)
         if (authService.validarUsuarioConCache(username.trim(), password)) {
+            // ✅ VERIFICAR/CREAR USUARIO EN MYSQL
+            java.util.Optional<Usuario> usuarioOpt = usuarioService.buscarPorUsuario(username.trim());
+            
+            if (usuarioOpt.isEmpty()) {
+                // Si no existe en MySQL, crearlo
+                Usuario nuevoUsuario = new Usuario();
+                nuevoUsuario.setUsuario(username.trim());
+                nuevoUsuario.setContraseña(password); // en producción, encriptar
+                nuevoUsuario.setPrimernombre(username.trim());
+                nuevoUsuario.setSegundonombre("");
+                nuevoUsuario.setEmail(username.trim() + "@fitcrows.local");
+                usuarioService.guardar(nuevoUsuario);
+                System.out.println("✅ Usuario creado en MySQL: " + username.trim());
+            }
+            
+            // ✅ GUARDAR USUARIO EN SESIÓN
+            session.setAttribute("usuarioAutenticado", username.trim());
+            System.out.println("✅ Usuario " + username.trim() + " autenticado. Sesión: " + session.getId());
             model.addAttribute("username", username);
-            return "redirect:/Home";
+            return "redirect:/home";
         } else {
             model.addAttribute("error", "Usuario o contraseña incorrectos");
             return "Login";
         }
+    }
+
+    @GetMapping("/Logout")
+    public String logout(HttpSession session) {
+        // ✅ LIMPIAR SESIÓN
+        session.invalidate();
+        System.out.println("✅ Sesión cerrada correctamente");
+        return "redirect:/home";
     }
 
     @PostMapping("/register")
